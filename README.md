@@ -69,7 +69,8 @@ The chat opens in the side bar. You can also move it into its own editor tab.
 
 - Switch between Claude, ChatGPT, Codex and other models in the middle of a chat. The
   conversation stays.
-- See how much of each subscription you've used.
+- See how much of each subscription you've used. When 20% or less is left, the model
+  chip warns you ("17% left"), so you can switch before you run out.
 - Hit a usage limit? Continue with another model in one click.
 - Choose how hard Hermes thinks, from **Low** to **Max**.
 
