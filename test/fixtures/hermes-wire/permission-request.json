@@ -1,0 +1,99 @@
+{
+  "_source": "Hand-assembled, not captured: the two session/request_permission shapes Hermes 0.21.5 sends, serialized from its own builders (edit_approval.py build_acp_edit_tool_call with the allow_once/deny options; permissions.py _build_permission_tool_call + _build_permission_options(allow_permanent=True, allow_session=True)). Full JSON-RPC frames: Hermes numbers its requests from 0. toolCallId is synthetic (edit-approval-N / perm-check-N), never the tc-... id of the tool call it guards. Approval must be decided by option kind, not optionId.",
+  "editApproval": {
+    "jsonrpc": "2.0",
+    "id": 0,
+    "method": "session/request_permission",
+    "params": {
+      "options": [
+        {
+          "kind": "allow_once",
+          "name": "Allow edit",
+          "optionId": "allow_once"
+        },
+        {
+          "kind": "reject_once",
+          "name": "Deny",
+          "optionId": "deny"
+        }
+      ],
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "toolCall": {
+        "content": [
+          {
+            "newText": "export const a = 2;\n",
+            "oldText": "export const a = 1;\n",
+            "path": "src/a.ts",
+            "type": "diff"
+          }
+        ],
+        "kind": "edit",
+        "rawInput": {
+          "arguments": {
+            "new_string": "export const a = 2;",
+            "old_string": "export const a = 1;",
+            "path": "src/a.ts"
+          },
+          "tool": "patch"
+        },
+        "status": "pending",
+        "title": "Approve edit: src/a.ts",
+        "toolCallId": "edit-approval-1"
+      }
+    }
+  },
+  "dangerousCommand": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "session/request_permission",
+    "params": {
+      "options": [
+        {
+          "kind": "allow_once",
+          "name": "Allow once",
+          "optionId": "allow_once"
+        },
+        {
+          "kind": "allow_always",
+          "name": "Allow for session",
+          "optionId": "allow_session"
+        },
+        {
+          "kind": "allow_always",
+          "name": "Allow always",
+          "optionId": "allow_always"
+        },
+        {
+          "kind": "reject_once",
+          "name": "Deny",
+          "optionId": "deny"
+        },
+        {
+          "kind": "reject_always",
+          "name": "Deny always",
+          "optionId": "deny_always"
+        }
+      ],
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "toolCall": {
+        "content": [
+          {
+            "content": {
+              "text": "recursive delete\n$ rm -rf build",
+              "type": "text"
+            },
+            "type": "content"
+          }
+        ],
+        "kind": "execute",
+        "rawInput": {
+          "command": "rm -rf build",
+          "description": "recursive delete"
+        },
+        "status": "pending",
+        "title": "recursive delete: rm -rf build",
+        "toolCallId": "perm-check-1"
+      }
+    }
+  }
+}

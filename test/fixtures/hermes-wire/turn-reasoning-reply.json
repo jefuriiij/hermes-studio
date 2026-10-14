@@ -1,0 +1,138 @@
+[
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "_meta": {
+        "hermes": {
+          "sessionProvenance": {
+            "acpSessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+            "currentHermesSessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+            "rootHermesSessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+            "parentHermesSessionId": null,
+            "sessionKind": "root",
+            "compressionDepth": 0
+          }
+        }
+      },
+      "title": "Reply with a short greeting; do not use tools.",
+      "updatedAt": "2026-09-26T15:55:31.655799+00:00",
+      "sessionUpdate": "session_info_update"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "Thinking about ",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_thought_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "how to greet ",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_thought_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "the user.",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_thought_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "# Hello\n\n",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_message_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "Here is **bold** text and ",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_message_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "a list:\n\n- one\n- two\n\n",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_message_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "```ts\nconst x = 1;\n```\n\n",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_message_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "content": {
+        "text": "<script>alert(1)</script> done.",
+        "type": "text"
+      },
+      "messageId": "881f8473-e634-412f-82c5-3ef1b3ba9f32",
+      "sessionUpdate": "agent_message_chunk"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "size": 128000,
+      "used": 1137,
+      "sessionUpdate": "usage_update"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "_meta": {
+        "hermes": {
+          "sessionProvenance": {
+            "acpSessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+            "currentHermesSessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+            "rootHermesSessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+            "parentHermesSessionId": null,
+            "sessionKind": "root",
+            "compressionDepth": 0
+          }
+        }
+      },
+      "title": "# Hello",
+      "updatedAt": "2026-09-26T15:55:33.572878+00:00",
+      "sessionUpdate": "session_info_update"
+    }
+  }
+]

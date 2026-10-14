@@ -6,7 +6,7 @@ Ask Hermes to fix a bug, explain some code or build a feature, and watch it work
 your files. You keep everything that makes Hermes yours: the skills it learns, its
 memory, and your ChatGPT, Codex or Claude subscription.
 
-![Hermes explains a bug, fixes it and lists the files it changed; next to it, Hermes asks before it edits a file](https://raw.githubusercontent.com/jefuriiij/hermes-studio-releases/main/images/chat.png)
+![Hermes explains a bug, fixes it and lists the files it changed; next to it, Hermes asks before it edits a file](https://raw.githubusercontent.com/jefuriiij/hermes-studio/main/images/chat.png)
 
 ## Before you start
 
@@ -56,7 +56,7 @@ The chat opens in the side bar. You can also move it into its own editor tab.
 
 ### Give Hermes the right context
 
-![Picking one of Hermes's skills with "/", and choosing a model with its usage](https://raw.githubusercontent.com/jefuriiij/hermes-studio-releases/main/images/composer.png)
+![Picking one of Hermes's skills with "/", and choosing a model with its usage](https://raw.githubusercontent.com/jefuriiij/hermes-studio/main/images/composer.png)
 
 - The file you're in goes along by itself, so Hermes knows what you're looking at.
 - Type **@** to add a file from your project.
@@ -76,7 +76,7 @@ The chat opens in the side bar. You can also move it into its own editor tab.
 
 ### Pick up where you left off
 
-![How free Hermes is, and how hard it thinks; next to it, the chats of this project](https://raw.githubusercontent.com/jefuriiij/hermes-studio-releases/main/images/modes.png)
+![How free Hermes is, and how hard it thinks; next to it, the chats of this project](https://raw.githubusercontent.com/jefuriiij/hermes-studio/main/images/modes.png)
 
 - Every chat is saved, per project. Search them, open one to carry on, rename or delete
   them.
@@ -86,7 +86,7 @@ The chat opens in the side bar. You can also move it into its own editor tab.
 
 ### See what Hermes learns
 
-![What Hermes learned this week, and what it remembers about you and your project](https://raw.githubusercontent.com/jefuriiij/hermes-studio-releases/main/images/panels.png)
+![What Hermes learned this week, and what it remembers about you and your project](https://raw.githubusercontent.com/jefuriiij/hermes-studio/main/images/panels.png)
 
 Hermes gets better the more you use it. Hermes Studio shows you how:
 
@@ -109,7 +109,7 @@ Hermes on your computer, and Hermes sends them to the model provider you picked.
 
 **Does it work in other editors?**
 Google Antigravity: yes. Download the `.vsix` from
-[GitHub Releases](https://github.com/jefuriiij/hermes-studio-releases/releases) and run
+[GitHub Releases](https://github.com/jefuriiij/hermes-studio/releases) and run
 **Extensions: Install from VSIX…**. Cursor: no, sorry.
 
 **Does it work on Mac and Linux?**
@@ -127,7 +127,7 @@ made by Nous Research.
   Studio: Path** in Settings to the full path of `hermes.exe`.
 - **"Setup needed":** Hermes has no model yet. Click **Run setup** and follow the steps.
 - **Anything else:** open the Command Palette and run **Hermes Studio: Show Log**, then
-  [tell us about it](https://github.com/jefuriiij/hermes-studio-releases/issues) and
+  [tell us about it](https://github.com/jefuriiij/hermes-studio/issues) and
   include what the log says.
 
 ## Settings
@@ -142,9 +142,9 @@ Open Settings and search for **Hermes Studio**:
 ## Feedback
 
 Ideas and bug reports are welcome:
-[open an issue](https://github.com/jefuriiij/hermes-studio-releases/issues).
+[open an issue](https://github.com/jefuriiij/hermes-studio/issues).
 
 ---
 
 Hermes Studio is an independent community extension. It is not made or endorsed by Nous
-Research, the makers of Hermes Agent. [MIT License](LICENSE).
+Research, the makers of Hermes Agent. [MIT License](https://github.com/jefuriiij/hermes-studio/blob/main/LICENSE).

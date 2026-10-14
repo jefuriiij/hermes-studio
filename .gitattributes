@@ -1,0 +1,8 @@
+# LF everywhere in the working tree. A global git config with
+# core.autocrlf=true would check every file out as CRLF — and Biome's
+# formatter (LF) would then flag every line of every file.
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.vsix binary

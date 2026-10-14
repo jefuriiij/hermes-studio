@@ -1,0 +1,63 @@
+[
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "availableCommands": [
+        {
+          "description": "List available commands",
+          "name": "help"
+        },
+        {
+          "description": "Show current model and provider, or switch models",
+          "input": {
+            "hint": "model name to switch to"
+          },
+          "name": "model"
+        },
+        {
+          "description": "List available tools with descriptions",
+          "name": "tools"
+        },
+        {
+          "description": "Show conversation message counts by role",
+          "name": "context"
+        },
+        {
+          "description": "Clear conversation history",
+          "name": "reset"
+        },
+        {
+          "description": "Compress conversation context",
+          "name": "compress"
+        },
+        {
+          "description": "Inject guidance into the currently running agent turn",
+          "input": {
+            "hint": "guidance for the active turn"
+          },
+          "name": "steer"
+        },
+        {
+          "description": "Queue a prompt to run after the current turn finishes",
+          "input": {
+            "hint": "prompt to run next"
+          },
+          "name": "queue"
+        },
+        {
+          "description": "Show Hermes version",
+          "name": "version"
+        }
+      ],
+      "sessionUpdate": "available_commands_update"
+    }
+  },
+  {
+    "sessionId": "3acd99bc-d97b-4c23-8692-f4d5c437429c",
+    "update": {
+      "size": 128000,
+      "used": 0,
+      "sessionUpdate": "usage_update"
+    }
+  }
+]

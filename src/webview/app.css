@@ -1,0 +1,1352 @@
+/* Scan only the webview sources; without source() Tailwind also scanned
+   README/scripts and the CSS grew by half (research §4). */
+@import "tailwindcss" source(".");
+
+/* VS Code puts the theme and motion classes on <body>. */
+@custom-variant hc (&:where(.vscode-high-contrast, .vscode-high-contrast *));
+@custom-variant reduce-motion (&:where(.vscode-reduce-motion, .vscode-reduce-motion *));
+
+/* Only VS Code tokens exist as colours, so no utility can ignore the theme
+   (a stray slate-800 would look fine in Dark Modern and wrong everywhere else). */
+@theme {
+  --color-*: initial;
+}
+
+/* `inline`: utilities emit var(--vscode-…) directly, so a theme switch — VS Code
+   rewrites these variables on <html> — restyles everything with no reload. */
+@theme inline {
+  --color-fg: var(--vscode-foreground);
+  --color-muted: var(--vscode-descriptionForeground);
+  --color-border: var(--vscode-panel-border, var(--vscode-widget-border, transparent));
+  --color-focus: var(--vscode-focusBorder);
+  --color-link: var(--vscode-textLink-foreground);
+  --color-link-active: var(--vscode-textLink-activeForeground);
+  --color-error: var(--vscode-errorForeground);
+  --color-warning: var(--vscode-editorWarning-foreground);
+  --color-info: var(--vscode-editorInfo-foreground);
+  --color-success: var(--vscode-testing-iconPassed, var(--vscode-charts-green));
+  --color-progress: var(--vscode-progressBar-background);
+  /* Undefined outside high-contrast themes, so these borders only appear there. */
+  --color-hc: var(--vscode-contrastBorder, transparent);
+  --color-hc-active: var(--vscode-contrastActiveBorder, transparent);
+
+  --color-btn: var(--vscode-button-background);
+  --color-btn-fg: var(--vscode-button-foreground);
+  --color-btn-hover: var(--vscode-button-hoverBackground);
+  --color-btn-border: var(--vscode-button-border, var(--vscode-contrastBorder, transparent));
+  --color-btn2: var(--vscode-button-secondaryBackground);
+  --color-btn2-fg: var(--vscode-button-secondaryForeground);
+  --color-btn2-hover: var(--vscode-button-secondaryHoverBackground);
+  --color-toolbar-hover: var(--vscode-toolbar-hoverBackground);
+  --color-hover: var(--vscode-list-hoverBackground, var(--vscode-toolbar-hoverBackground));
+  --color-selected: var(--vscode-list-activeSelectionBackground);
+  --color-selected-fg: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+  /* Menus that float over the chat. */
+  --color-widget: var(--vscode-editorWidget-background);
+  --color-widget-border: var(
+    --vscode-editorWidget-border,
+    var(--vscode-widget-border, transparent)
+  );
+  --color-shadow: var(--vscode-widget-shadow, transparent);
+  /* The view pane's own colour, for a screen drawn over the chat: the side
+     bar's, or the editor's in an editor tab (set on <body> below). */
+  --color-surface: var(--hs-surface);
+  /* Hermes' own mark. charts.yellow defaults to editorWarning.foreground, so
+     every theme defines one. */
+  --color-hermes: var(--vscode-charts-yellow, var(--vscode-editorWarning-foreground));
+
+  /* The tabs (Chat and the Hermes panels): drawn like VS Code's panel tabs,
+     their counts like the activity bar's badges. */
+  --color-tab-fg: var(--vscode-panelTitle-activeForeground, var(--vscode-foreground));
+  --color-tab-muted: var(
+    --vscode-panelTitle-inactiveForeground,
+    var(--vscode-descriptionForeground)
+  );
+  --color-tab-border: var(--vscode-panelTitle-activeBorder, var(--vscode-focusBorder));
+  --color-badge: var(--vscode-activityBarBadge-background, var(--vscode-badge-background));
+  --color-badge-fg: var(--vscode-activityBarBadge-foreground, var(--vscode-badge-foreground));
+
+  --color-input: var(--vscode-input-background);
+  --color-input-fg: var(--vscode-input-foreground);
+  --color-input-border: var(--vscode-input-border, var(--vscode-contrastBorder, transparent));
+  --color-placeholder: var(--vscode-input-placeholderForeground);
+
+  --color-code-bg: var(--vscode-textCodeBlock-background);
+  --color-quote-bg: var(--vscode-textBlockQuote-background);
+  --color-quote-border: var(--vscode-textBlockQuote-border);
+  /* requestBubbleBackground is what VS Code's own chat paints user bubbles
+     with; requestBackground is nearly invisible on a sidebar, so it is only
+     the fallback, then the input background. */
+  --color-user-bubble: var(
+    --vscode-chat-requestBubbleBackground,
+    var(--vscode-chat-requestBackground, var(--vscode-input-background))
+  );
+  /* Equals contrastBorder in high-contrast themes (VS Code's own default). */
+  --color-user-border: var(--vscode-chat-requestBorder, var(--vscode-contrastBorder, transparent));
+
+  --font-sans: var(--vscode-font-family);
+  --font-mono: var(--vscode-editor-font-family);
+  --text-ui: var(--vscode-font-size);
+  --text-small: calc(var(--vscode-font-size) - 1px);
+  --text-code: var(--vscode-editor-font-size);
+}
+
+@layer base {
+  /* #app too: without a definite height the column grows with its content and
+     the message list never scrolls. */
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+  /* The chat in an editor tab (logic/html.ts puts `data-place` on <body>). */
+  body[data-place="editor"] {
+    --hs-surface: var(--vscode-editor-background);
+  }
+  /* Background stays transparent: the view pane behind the iframe already has
+     the right colour whether the view sits in a sidebar or the panel. */
+  body {
+    --hs-surface: var(--vscode-sideBar-background, var(--vscode-editor-background));
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-ui);
+    font-weight: var(--vscode-font-weight, normal);
+    line-height: 1.4;
+  }
+  :focus-visible {
+    outline: 1px solid var(--color-focus);
+    outline-offset: -1px;
+  }
+}
+
+@layer components {
+  /* Buttons, shared by the header, notices and the composer. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border: 1px solid var(--color-btn-border);
+    border-radius: 2px;
+    font: inherit;
+    line-height: 18px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .btn-primary {
+    background: var(--color-btn);
+    color: var(--color-btn-fg);
+  }
+  .btn-primary:not(:disabled):hover {
+    background: var(--color-btn-hover);
+  }
+  .btn-secondary {
+    background: var(--color-btn2);
+    color: var(--color-btn2-fg);
+  }
+  .btn-secondary:not(:disabled):hover {
+    background: var(--color-btn2-hover);
+  }
+  /* A destructive confirmation (Delete a session). The status bar's error
+     colours: a theme token pair made for white-on-red. */
+  .btn-danger {
+    background: var(--vscode-statusBarItem-errorBackground, var(--vscode-editorError-foreground));
+    color: var(--vscode-statusBarItem-errorForeground, var(--vscode-button-foreground));
+  }
+  .btn-danger:not(:disabled):hover {
+    filter: brightness(1.1);
+  }
+  /* The small icon buttons on a highlighted Sessions row (rename, delete). */
+  .row-act {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.85;
+  }
+  .row-act:hover {
+    background: color-mix(in srgb, currentColor 16%, transparent);
+    opacity: 1;
+  }
+  /* The effort slider (mock board 20). `--tone` is the level's colour
+     (lib/levels.ts). The thumb springs onto a stop when let go — a small
+     overshoot, the "magnet" — and follows the pointer while dragged. */
+  .effort-label {
+    color: var(--tone);
+  }
+  .effort-saved {
+    color: var(--color-success);
+    animation: effort-saved 1.6s ease forwards;
+  }
+  .effort-slider {
+    position: relative;
+    margin: 0 14px;
+    padding: 10px 0 2px;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    outline: none;
+  }
+  .effort-slider.is-busy {
+    cursor: default;
+  }
+  .effort-track {
+    position: relative;
+    height: 4px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--color-fg) 18%, transparent);
+  }
+  .effort-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 2px;
+    background-color: var(--tone);
+    transition: background-color 0.2s;
+  }
+  .effort-stop {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border: 2px solid color-mix(in srgb, var(--color-fg) 38%, transparent);
+    border-radius: 50%;
+    background: var(--color-widget);
+    transform: translate(-50%, -50%);
+    transition:
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+  .effort-stop.is-on {
+    border-color: var(--tone);
+    background: var(--tone);
+  }
+  .effort-thumb {
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--tone);
+    color: var(--tone);
+    box-shadow:
+      0 0 0 3px var(--color-widget),
+      0 2px 6px var(--color-shadow);
+    transform: translate(-50%, -50%);
+    transition: background-color 0.2s;
+  }
+  .effort-slider:focus-visible .effort-thumb {
+    outline: 1px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .effort-thumb.is-snapping,
+  .effort-fill.is-snapping {
+    transition:
+      left 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+      width 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.2s;
+  }
+  /* Saving: a ring turns around the thumb, a light runs along the track. */
+  .effort-ring {
+    position: absolute;
+    inset: -6px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-right-color: currentColor;
+    border-radius: 50%;
+    animation: effort-spin 0.8s linear infinite;
+  }
+  .effort-fill.is-saving {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, white 45%, transparent) 50%,
+      transparent 100%
+    );
+    background-size: 40% 100%;
+    background-repeat: no-repeat;
+    animation: effort-sheen 1.1s linear infinite;
+  }
+  .effort-names {
+    position: relative;
+    height: 16px;
+    margin-top: 8px;
+    font-size: 10.5px;
+    color: var(--color-muted);
+  }
+  .effort-names > span {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .effort-names > span:first-child {
+    transform: translateX(-6px);
+  }
+  .effort-names > span:last-child {
+    transform: translateX(calc(-100% + 6px));
+  }
+  .effort-names > span.is-here {
+    color: var(--tone);
+    font-weight: 600;
+  }
+  @keyframes effort-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes effort-sheen {
+    from {
+      background-position: -60% 0;
+    }
+    to {
+      background-position: 160% 0;
+    }
+  }
+  @keyframes effort-saved {
+    0% {
+      opacity: 0;
+      transform: translateY(2px);
+    }
+    15%,
+    80% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  .vscode-reduce-motion :is(.effort-ring, .effort-fill.is-saving, .effort-saved) {
+    animation: none;
+  }
+  .vscode-reduce-motion :is(.effort-thumb, .effort-fill).is-snapping {
+    transition: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :is(.effort-ring, .effort-fill.is-saving, .effort-saved) {
+      animation: none;
+    }
+    :is(.effort-thumb, .effort-fill).is-snapping {
+      transition: none;
+    }
+  }
+  /* The composer's focus outline and the mode chip in the edit mode's colour
+     (mock board 21): `--mode-tone` from lib/levels.ts modeTone. */
+  .composer-box:focus-within {
+    outline-color: var(--mode-tone, var(--color-focus));
+  }
+  /* Stop (mock board 22, B): red, so it never looks like Send. The status
+     bar's error pair is made for text on red. */
+  .icon-btn-stop {
+    border-color: transparent;
+    background: var(--vscode-statusBarItem-errorBackground, var(--vscode-editorError-foreground));
+    color: var(--vscode-statusBarItem-errorForeground, var(--vscode-button-foreground));
+  }
+  .icon-btn-stop:hover {
+    filter: brightness(1.12);
+  }
+  /* "@path" in the composer and on sent messages (mock board 19B). No
+     padding: in the composer it sits behind the textarea's own letters and
+     must take exactly their width — the shadow draws the rest of the pill. */
+  .at-mention {
+    color: var(--color-hermes);
+    background: color-mix(in srgb, var(--color-hermes) 14%, transparent);
+    border-radius: 3px;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-hermes) 14%, transparent);
+  }
+  /* The end of a reply (mock board 23, ReplyEnd.svelte). */
+  .reply-changed {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--color-fg) 3%, transparent);
+  }
+  .reply-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 26px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--color-fg);
+    text-align: left;
+    cursor: pointer;
+  }
+  .reply-file:hover {
+    background: var(--color-hover);
+  }
+  .reply-foot {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: -4px;
+    color: var(--color-muted);
+    font-size: 11.5px;
+  }
+  .reply-act {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .reply-act:hover {
+    background: var(--color-toolbar-hover);
+    color: var(--color-fg);
+  }
+  /* The image lightbox dims the chat behind it. The one colour not from the
+     theme: a dimming layer is black in every theme, as VS Code's own modal
+     dialogs dim the workbench. */
+  .lightbox {
+    background: rgb(0 0 0 / 0.6);
+  }
+  /* Its ×, on the picture's upper-right corner, half over the edge. */
+  .lightbox-close {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--color-widget-border);
+    border-radius: 50%;
+    background: var(--color-widget);
+    color: var(--color-fg);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    cursor: pointer;
+  }
+  .lightbox-close:hover {
+    background: var(--color-hover);
+  }
+  .lightbox-close:focus-visible {
+    outline: 1px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+  /* "Send now" / "Send" on a queued message: a link-coloured text button. */
+  .queue-link {
+    flex-shrink: 0;
+    height: 22px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-link);
+    font: inherit;
+    font-size: var(--text-small);
+    cursor: pointer;
+  }
+  .queue-link:hover {
+    background: var(--color-hover);
+    color: var(--color-link-active);
+  }
+  /* Floats over text, so it must be opaque in every theme: Dark Modern's
+     secondary button is transparent and high-contrast dark has no button fill. */
+  .btn-float {
+    background: var(--vscode-button-background, var(--vscode-editorWidget-background));
+    color: var(--vscode-button-foreground, var(--vscode-foreground));
+    box-shadow: 0 1px 6px var(--vscode-widget-shadow, transparent);
+  }
+  .btn-float:hover {
+    background: var(--vscode-button-hoverBackground, var(--vscode-editorWidget-background));
+  }
+  /* Toolbar-style: no fill until hovered. */
+  .btn-ghost {
+    padding: 1px 6px;
+    border-color: var(--color-hc);
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+  }
+  .btn-ghost:hover {
+    background: var(--color-toolbar-hover);
+  }
+
+  /* Square icon buttons at the end of the composer. */
+  .icon-btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--color-btn-border);
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .icon-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .icon-btn-primary {
+    background: var(--color-btn);
+    color: var(--color-btn-fg);
+  }
+  .icon-btn-primary:not(:disabled):hover {
+    background: var(--color-btn-hover);
+  }
+  /* Dark Modern's secondary button is transparent: the input border keeps
+     Stop visible as a button. */
+  .icon-btn-secondary {
+    border-color: var(--color-input-border);
+    background: var(--color-btn2);
+    color: var(--color-btn2-fg);
+  }
+  .icon-btn-secondary:hover {
+    background: var(--color-btn2-hover);
+  }
+
+  /* Read-only facts in the composer toolbar (model, context). */
+  .chip {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 8px;
+    border: 1px solid var(--color-input-border);
+    border-radius: 11px;
+    color: var(--color-muted);
+    font-size: var(--text-small);
+    white-space: nowrap;
+  }
+  /* A chip that opens a menu (model, approval mode). */
+  button.chip {
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  button.chip:not(:disabled):hover {
+    background: var(--color-toolbar-hover);
+    color: var(--color-fg);
+  }
+  /* The model chip while its subscription runs low ("17% left"). */
+  button.chip.chip-warning {
+    border-color: color-mix(in srgb, var(--color-warning) 45%, transparent);
+  }
+  button.chip.chip-error {
+    border-color: color-mix(in srgb, var(--color-error) 45%, transparent);
+  }
+  button.chip[aria-expanded="true"] {
+    border-color: var(--color-focus);
+    color: var(--color-fg);
+  }
+  button.chip:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  /* The mode chip in the edit mode's colour (mock board 21), in every state. */
+  button.chip.mode-chip {
+    border-color: color-mix(in srgb, var(--mode-tone) 70%, transparent);
+    color: var(--mode-tone);
+    background: color-mix(in srgb, var(--mode-tone) 12%, transparent);
+  }
+  button.chip.mode-chip:not(:disabled):hover,
+  button.chip.mode-chip[aria-expanded="true"] {
+    border-color: var(--mode-tone);
+    background: color-mix(in srgb, var(--mode-tone) 20%, transparent);
+  }
+
+  /* The context ring: a button that opens the context pop-up. */
+  .ring-btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 6px 0 4px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--text-small);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+  .ring-btn:hover {
+    background: var(--color-toolbar-hover);
+  }
+  .ring-btn[aria-expanded="true"] {
+    border-color: var(--color-focus);
+  }
+
+  /* The composer's round "+" (opens the Add menu); the cross turns into an ×. */
+  .plus-btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid var(--color-input-border);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+  }
+  .plus-btn svg {
+    transition: transform 0.15s;
+  }
+  .plus-btn:hover {
+    background: var(--color-toolbar-hover);
+    color: var(--color-fg);
+  }
+  .plus-btn[aria-expanded="true"] {
+    border-color: var(--color-focus);
+    color: var(--color-fg);
+  }
+  .plus-btn[aria-expanded="true"] svg {
+    transform: rotate(45deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plus-btn svg {
+      transition: none;
+    }
+  }
+
+  /* What the "+" attached, above the textarea and in the sent bubble. */
+  .ctx-chip {
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 3px 0 7px;
+    border: 1px solid var(--color-hc);
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--color-fg) 9%, transparent);
+    font-size: var(--text-small);
+    white-space: nowrap;
+  }
+  /* An image chip opens its picture: the label part in the composer, the
+     whole chip on a sent message. */
+  .ctx-chip-open {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .ctx-chip-open:hover > .truncate,
+  .ctx-chip-view:hover > .truncate {
+    text-decoration: underline;
+  }
+  .ctx-chip-open:focus-visible,
+  .ctx-chip-view:focus-visible {
+    outline: 1px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+  button.ctx-chip-view {
+    color: var(--color-muted);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  button.ctx-chip-view:hover {
+    color: var(--color-fg);
+  }
+  /* The empty chat's "Hermes learned …" row. Quiet: a dashed outline. */
+  .learned-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px dashed color-mix(in srgb, var(--color-hermes) 30%, transparent);
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+  .learned-row:hover {
+    background: var(--color-hover);
+  }
+  /* Something new since you last looked: a warm fill and a soft glow. */
+  .learned-row-fresh {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--color-hermes) 45%, transparent);
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-hermes) 13%, transparent),
+      color-mix(in srgb, var(--color-hermes) 3%, transparent)
+    );
+    box-shadow: 0 0 18px color-mix(in srgb, var(--color-hermes) 14%, transparent);
+  }
+  .learned-stars {
+    fill: var(--color-hermes);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--color-hermes) 55%, transparent));
+  }
+  .learned-stars .star {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: learned-twinkle 1.8s ease-in-out infinite;
+  }
+  .learned-stars .star-2 {
+    animation-delay: 0.45s;
+  }
+  .learned-stars .star-3 {
+    animation-delay: 0.9s;
+  }
+  @keyframes learned-twinkle {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(0.55);
+      opacity: 0.5;
+    }
+  }
+  .learned-sheen {
+    background: linear-gradient(
+      100deg,
+      var(--color-fg) 35%,
+      var(--color-hermes) 50%,
+      var(--color-fg) 65%
+    );
+    background-size: 250% 100%;
+    background-clip: text;
+    color: transparent;
+    animation: learned-sheen 2.6s linear infinite;
+  }
+  @keyframes learned-sheen {
+    0% {
+      background-position: 160% 0;
+    }
+    100% {
+      background-position: -60% 0;
+    }
+  }
+  /* Both the OS setting and VS Code's own "reduce motion". */
+  @media (prefers-reduced-motion: reduce) {
+    .learned-stars .star,
+    .learned-sheen {
+      animation: none;
+    }
+  }
+  :where(body.vscode-reduce-motion) .learned-stars .star,
+  :where(body.vscode-reduce-motion) .learned-sheen {
+    animation: none;
+  }
+  /* A skill picked from the "/" menu: Hermes's yellow, as its mark. */
+  .ctx-chip-skill {
+    border-color: color-mix(in srgb, var(--color-hermes) 35%, transparent);
+    background: color-mix(in srgb, var(--color-hermes) 14%, transparent);
+    color: var(--color-hermes);
+  }
+  /* The current file, ×-ed: dashed and struck through, a click brings it back. */
+  button.ctx-chip-off {
+    padding-right: 7px;
+    border: 1px dashed var(--color-input-border);
+    background: transparent;
+    color: var(--color-muted);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  button.ctx-chip-off:hover {
+    color: var(--color-fg);
+  }
+  .ctx-chip-x {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+  }
+  .ctx-chip-x:hover {
+    background: var(--color-toolbar-hover);
+    color: var(--color-fg);
+  }
+
+  /* A bordered group in the transcript (tool steps). The tint is mixed from
+     the foreground, so it reads as "slightly raised" on any theme. */
+  .card {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--color-fg) 3%, transparent);
+  }
+
+  .hermes-mark {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--color-hermes) 40%, transparent);
+    background: color-mix(in srgb, var(--color-hermes) 14%, transparent);
+    color: var(--color-hermes);
+  }
+
+  .pill-busy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 9px;
+    border: 1px solid var(--color-hc);
+    border-radius: 11px;
+    background: color-mix(in srgb, var(--color-progress) 16%, transparent);
+    color: var(--color-link);
+    font-size: var(--text-small);
+    font-weight: 600;
+  }
+  .pill-warn {
+    background: color-mix(in srgb, var(--color-warning) 16%, transparent);
+    color: var(--color-warning);
+  }
+
+  /* The view's tabs: Chat and the Hermes panels. */
+  .view-tab {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 32px;
+    min-width: 34px;
+    padding: 0 6px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--color-tab-muted);
+    font: inherit;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .view-tab:hover {
+    color: var(--color-tab-fg);
+  }
+  .view-tab[aria-selected="true"] {
+    border-bottom-color: var(--color-tab-border);
+    color: var(--color-tab-fg);
+  }
+  .tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 5px;
+    border: 1px solid var(--color-hc);
+    border-radius: 8px;
+    background: var(--color-badge);
+    color: var(--color-badge-fg);
+    font-size: 10px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Icons only: the count sits on the icon's corner. */
+  .view-tab[data-compact] .tab-badge {
+    position: absolute;
+    top: 3px;
+    right: 1px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 4px;
+    font-size: 9px;
+  }
+  .view-tab[data-compact] .tab-dot {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+  }
+
+  /* The panel tabs' cards and rows. */
+  .panel-card {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--color-fg) 3%, transparent);
+  }
+  .panel-card > * + * {
+    border-top: 1px solid var(--color-border);
+  }
+  /* A whole row that opens something: a button laid out as a row. */
+  .panel-row-btn {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .panel-row-btn:hover {
+    background: var(--color-hover);
+  }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 2px;
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* The part after "·" in a section label is plain text, not a label. */
+  .section-label .aside {
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .link-btn {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-link);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .link-btn:hover {
+    color: var(--color-link-active);
+    text-decoration: underline;
+  }
+  /* A memory proposal (mock board 27A): what the entry says now, struck out,
+     and the versions to pick from. */
+  .memory-old {
+    padding: 4px 8px;
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--color-error) 9%, transparent);
+    color: var(--color-muted);
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in srgb, var(--color-error) 55%, transparent);
+  }
+  .memory-choice {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 7px 9px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .memory-choice:hover {
+    background: var(--color-hover);
+  }
+  .memory-choice input {
+    margin: 3px 0 0;
+    flex-shrink: 0;
+    accent-color: var(--color-focus);
+  }
+  .memory-choice-on {
+    border-color: var(--color-focus);
+    background: color-mix(in srgb, var(--color-focus) 10%, transparent);
+  }
+  /* The Capabilities tab's Installed | Get more switch (mock board 28). */
+  .seg {
+    display: inline-flex;
+    padding: 2px;
+    border: 1px solid var(--color-input-border);
+    border-radius: 7px;
+  }
+  .seg button {
+    height: 24px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--color-muted);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .seg button:hover {
+    color: var(--color-fg);
+  }
+  .seg button[aria-pressed="true"] {
+    background: var(--color-selected);
+    color: var(--color-selected-fg);
+  }
+  .trust {
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+    padding: 0 6px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+
+  /* Markdown produced by marked carries no Tailwind classes; style it here.
+     Tailwind's preflight reset every element, VS Code's defaults included. */
+  .md {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .md > :first-child {
+    margin-top: 0;
+  }
+  .md > :last-child {
+    margin-bottom: 0;
+  }
+  .md :where(p, ul, ol, blockquote, table, hr, .code-block) {
+    margin-block: 0.75em;
+  }
+  .md :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: 0.9em 0.4em;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .md :where(h1) {
+    font-size: 1.3em;
+  }
+  .md :where(h2) {
+    font-size: 1.18em;
+  }
+  .md :where(h3) {
+    font-size: 1.06em;
+  }
+  .md :where(ul) {
+    list-style: disc;
+    padding-left: 1.4em;
+  }
+  .md :where(ol) {
+    list-style: decimal;
+    padding-left: 1.6em;
+  }
+  .md :where(li + li) {
+    margin-top: 0.4em;
+  }
+  .md :where(li)::marker {
+    color: var(--color-muted);
+  }
+  .md :where(li > p) {
+    margin-block: 0.25em;
+  }
+  .md :where(li:has(> input[type="checkbox"])) {
+    list-style: none;
+    margin-left: -1.2em;
+  }
+  .md :where(input[type="checkbox"]) {
+    margin-right: 0.4em;
+    vertical-align: -1px;
+  }
+  .md :where(strong) {
+    font-weight: 600;
+  }
+  .md :where(em) {
+    font-style: italic;
+  }
+  .md :where(del) {
+    text-decoration: line-through;
+  }
+  .md :where([data-href]) {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .md :where([data-href]:hover) {
+    color: var(--color-link-active);
+  }
+  .md :where(code) {
+    font-family: var(--font-mono);
+  }
+  /* Inline code uses textPreformat, as VS Code's own markdown does. Light
+     Modern's textCodeBlock equals its sidebar colour, which would leave inline
+     code with no visible background at all. */
+  .md :where(:not(pre) > code) {
+    --code-tone: var(--vscode-symbolIcon-variableForeground, var(--color-link));
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--code-tone) 12%, transparent);
+    color: var(--code-tone);
+    font-size: 0.92em;
+  }
+  /* A path Hermes wrote that is a real file (Markdown.svelte): gold, like an
+     "@file" mention, with a file icon, and a click opens it. */
+  .md :where(code.md-path.is-file) {
+    --code-tone: var(--color-hermes);
+    padding-left: 1.45em;
+    background: color-mix(in srgb, var(--code-tone) 13%, transparent);
+    cursor: pointer;
+    position: relative;
+  }
+  .md :where(code.md-path.is-file)::before {
+    content: "";
+    position: absolute;
+    left: 0.4em;
+    top: 50%;
+    width: 0.8em;
+    height: 0.8em;
+    transform: translateY(-50%);
+    background: currentColor;
+    mask:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9 2H4.5v12h7V4.5z M9 2v2.5h2.5' fill='none' stroke='black' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+  .md :where(code.md-path.is-file:hover) {
+    background: color-mix(in srgb, var(--code-tone) 24%, transparent);
+    text-decoration: underline;
+  }
+  .md :where(code.md-path.is-file:focus-visible) {
+    outline: 1px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+  .md :where(blockquote) {
+    padding: 0.2em 0.75em;
+    border-left: 3px solid var(--color-quote-border);
+    background: var(--color-quote-bg);
+  }
+  .md :where(hr) {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+  }
+  /* A wide table scrolls on its own instead of widening the whole view. */
+  .md :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+  .md :where(th, td) {
+    padding: 0.25em 0.6em;
+    border: 1px solid var(--vscode-editorWidget-border, var(--color-border));
+    text-align: left;
+  }
+  .md :where(th) {
+    font-weight: 600;
+    background: var(--vscode-keybindingTable-headerBackground, transparent);
+  }
+
+  .code-block {
+    overflow: hidden;
+    /* contrastBorder in high contrast; otherwise widget.border, because Light
+       Modern paints code blocks with exactly the sidebar colour (#F8F8F8) and
+       a borderless block would disappear. */
+    border: 1px solid var(--vscode-contrastBorder, var(--vscode-widget-border, transparent));
+    border-radius: 8px;
+    background: var(--color-code-bg);
+  }
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 28px;
+    padding: 2px 4px 2px 10px;
+    border-bottom: 1px solid var(--vscode-contrastBorder, var(--vscode-widget-border, transparent));
+    color: var(--color-muted);
+    font-size: var(--text-small);
+  }
+  .code-copy {
+    padding: 1px 8px;
+    border: 1px solid var(--color-hc);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-muted);
+    font: inherit;
+    cursor: pointer;
+  }
+  .code-copy:hover {
+    background: var(--color-toolbar-hover);
+    color: var(--color-fg);
+  }
+  .code-copy[data-state="done"] {
+    color: var(--color-success);
+  }
+  .code-copy[data-state="failed"] {
+    color: var(--color-error);
+  }
+  .code-block pre {
+    margin: 0;
+    padding: 8px 12px 10px;
+    overflow-x: auto;
+  }
+
+  /* Unified diffs (approval cards, edit steps). The editor's own diff colours,
+     so they follow the theme; the line/text fallbacks cover older themes. */
+  .diff-block {
+    overflow: hidden;
+    border: 1px solid var(--vscode-contrastBorder, var(--vscode-widget-border, transparent));
+    border-radius: 6px;
+    background: var(--color-code-bg);
+  }
+  .diff-no {
+    width: 1%;
+    padding: 0 6px 0 8px;
+    color: var(--color-muted);
+    text-align: right;
+    white-space: nowrap;
+    user-select: none;
+    opacity: 0.7;
+  }
+  .diff-sign {
+    width: 1%;
+    padding-right: 6px;
+    user-select: none;
+  }
+  .diff-add {
+    background: var(
+      --vscode-diffEditor-insertedLineBackground,
+      var(--vscode-diffEditor-insertedTextBackground)
+    );
+  }
+  .diff-del {
+    background: var(
+      --vscode-diffEditor-removedLineBackground,
+      var(--vscode-diffEditor-removedTextBackground)
+    );
+  }
+  .diff-gap {
+    color: var(--color-muted);
+  }
+
+  /* A blinking caret after the text Hermes is still writing. It goes on the
+     last paragraph, heading or list item only: after a code block or a table
+     it would sit alone on its own line. */
+  .md[data-streaming] > :is(p, h1, h2, h3, h4, h5, h6):last-child::after,
+  .md[data-streaming] > :is(ul, ol):last-child > li:last-child::after {
+    content: "▍";
+    margin-left: 1px;
+    color: var(--color-link);
+    animation: caret-blink 1s steps(1) infinite;
+  }
+  .code-block code {
+    font-size: var(--text-code);
+    line-height: 1.45;
+    white-space: pre;
+    tab-size: 4;
+  }
+}
+
+/* highlight.js emits classes only (no inline styles, so the CSP is untouched).
+   The debug-view token colours ARE VS Code's syntax palette per theme
+   (Dark Modern: string #ce9178, boolean #4e94ce, number #b5cea8). */
+.hljs-keyword,
+.hljs-literal,
+.hljs-selector-tag,
+.hljs-name,
+.hljs-doctag {
+  color: var(--vscode-debugTokenExpression-boolean);
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-template-tag,
+.hljs-symbol,
+.hljs-link {
+  color: var(--vscode-debugTokenExpression-string);
+}
+.hljs-number,
+.hljs-bullet {
+  color: var(--vscode-debugTokenExpression-number);
+}
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: var(--vscode-symbolIcon-functionForeground);
+}
+.hljs-title.class_,
+.hljs-type,
+.hljs-built_in,
+.hljs-selector-class {
+  color: var(--vscode-symbolIcon-classForeground);
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-property,
+.hljs-params {
+  color: var(--vscode-symbolIcon-variableForeground);
+}
+.hljs-meta,
+.hljs-subst {
+  color: var(--vscode-debugTokenExpression-name);
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--color-muted);
+  font-style: italic;
+}
+.hljs-addition {
+  background: var(--vscode-diffEditor-insertedTextBackground);
+}
+.hljs-deletion {
+  background: var(--vscode-diffEditor-removedTextBackground);
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 600;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion, from VS Code's own setting (body class) or the OS. Spinners
+   stop in place and still read as "in progress". No !important needed: these
+   rules are unlayered, and unlayered CSS beats every Tailwind layer. */
+.vscode-reduce-motion *,
+.vscode-reduce-motion *::before,
+.vscode-reduce-motion *::after {
+  animation: none;
+  transition: none;
+  scroll-behavior: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none;
+    transition: none;
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,12 @@
+# Whitelist: ship only the built bundles and the manifest's own files.
+**
+!dist/extension.js
+!dist/webview/webview.js
+!dist/webview/webview.css
+!dist/webview/assets/**
+!resources/*.svg
+!resources/*.png
+!package.json
+!README.md
+!LICENSE
+!CHANGELOG.md

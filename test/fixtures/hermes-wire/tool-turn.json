@@ -1,0 +1,114 @@
+{
+  "_source": "Hand-assembled, not captured: each update is the serialized output of Hermes 0.21.5's own builders (acp_adapter/tools.py build_tool_start / build_tool_complete, acp.update_tool_call, events.py plan), with paths and text changed. Order follows a real turn: a read tool, then a terminal tool whose dangerous-command approval (perm-check-1) is answered, closed by an update for that synthetic id that no tool_call ever announced, then the command fails; plan arrives on the step after a todo call; usage_update ends the turn. tool_call never carries status (the tool is already running).",
+  "updates": [
+    {
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "update": {
+        "kind": "read",
+        "locations": [
+          {
+            "line": 10,
+            "path": "src/a.ts"
+          }
+        ],
+        "title": "read_file: a.ts L10",
+        "toolCallId": "tc-3f9a1c2b4d5e",
+        "sessionUpdate": "tool_call"
+      }
+    },
+    {
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "update": {
+        "content": [
+          {
+            "content": {
+              "text": "Read src/a.ts\n\n```\nexport const a = 1;\n```",
+              "type": "text"
+            },
+            "type": "content"
+          }
+        ],
+        "kind": "read",
+        "status": "completed",
+        "toolCallId": "tc-3f9a1c2b4d5e",
+        "sessionUpdate": "tool_call_update"
+      }
+    },
+    {
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "update": {
+        "content": [
+          {
+            "content": {
+              "text": "$ rm -rf build",
+              "type": "text"
+            },
+            "type": "content"
+          }
+        ],
+        "kind": "execute",
+        "locations": [],
+        "title": "terminal: rm -rf build",
+        "toolCallId": "tc-8b7e6d5c4a39",
+        "sessionUpdate": "tool_call"
+      }
+    },
+    {
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "update": {
+        "status": "completed",
+        "toolCallId": "perm-check-1",
+        "sessionUpdate": "tool_call_update"
+      }
+    },
+    {
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "update": {
+        "content": [
+          {
+            "content": {
+              "text": "terminal failed: rm: cannot remove 'build': Permission denied",
+              "type": "text"
+            },
+            "type": "content"
+          }
+        ],
+        "kind": "execute",
+        "status": "failed",
+        "toolCallId": "tc-8b7e6d5c4a39",
+        "sessionUpdate": "tool_call_update"
+      }
+    },
+    {
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "update": {
+        "entries": [
+          {
+            "content": "[cancelled] Rewrite the auth module",
+            "priority": "medium",
+            "status": "completed"
+          },
+          {
+            "content": "Fix the login redirect",
+            "priority": "medium",
+            "status": "in_progress"
+          },
+          {
+            "content": "Add a regression test",
+            "priority": "medium",
+            "status": "pending"
+          }
+        ],
+        "sessionUpdate": "plan"
+      }
+    },
+    {
+      "sessionId": "7c2d9e41-3b5a-4f60-8a17-d2e4c6b8f901",
+      "update": {
+        "size": 1000000,
+        "used": 12400,
+        "sessionUpdate": "usage_update"
+      }
+    }
+  ]
+}

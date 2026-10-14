@@ -1,0 +1,303 @@
+{
+  "name": "hermes-studio",
+  "displayName": "Hermes Studio",
+  "description": "Hermes Agent, right inside VS Code. Chat about your code, approve every change, switch models and see what Hermes learns. Needs Hermes Agent installed.",
+  "version": "0.6.0",
+  "publisher": "jefuriiij",
+  "license": "MIT",
+  "icon": "resources/icon.png",
+  "galleryBanner": {
+    "color": "#0000F2",
+    "theme": "dark"
+  },
+  "private": true,
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jefuriiij/hermes-studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jefuriiij/hermes-studio/issues"
+  },
+  "homepage": "https://github.com/jefuriiij/hermes-studio#readme",
+  "engines": {
+    "vscode": "^1.106.0",
+    "node": ">=22"
+  },
+  "categories": [
+    "AI",
+    "Chat"
+  ],
+  "keywords": [
+    "hermes",
+    "hermes-agent",
+    "acp",
+    "agent",
+    "chat"
+  ],
+  "main": "./dist/extension.js",
+  "extensionKind": [
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Hermes Studio launches an AI agent that can read, edit and run code in this workspace."
+    },
+    "virtualWorkspaces": false
+  },
+  "activationEvents": [
+    "onWebviewPanel:hermesStudio.chatEditor",
+    "onUri"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "secondarySidebar": [
+        {
+          "id": "hermes-studio",
+          "title": "Hermes Studio",
+          "icon": "resources/hermes.svg"
+        }
+      ],
+      "activitybar": [
+        {
+          "id": "hermes-studio-panels",
+          "title": "Hermes",
+          "icon": "resources/hermes.svg"
+        }
+      ]
+    },
+    "views": {
+      "hermes-studio": [
+        {
+          "type": "webview",
+          "id": "hermesStudio.chat",
+          "name": "Chat"
+        }
+      ],
+      "hermes-studio-panels": [
+        {
+          "id": "hermesStudio.learning",
+          "name": "Learning"
+        },
+        {
+          "id": "hermesStudio.curator",
+          "name": "Curator"
+        },
+        {
+          "id": "hermesStudio.memory",
+          "name": "Memory"
+        },
+        {
+          "id": "hermesStudio.capabilities",
+          "name": "Capabilities"
+        },
+        {
+          "id": "hermesStudio.agents",
+          "name": "Agents"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "hermesStudio.openChat",
+        "title": "Open Chat",
+        "category": "Hermes Studio",
+        "icon": "resources/hermes-button.svg"
+      },
+      {
+        "command": "hermesStudio.openChatInEditor",
+        "title": "Open Chat in Editor Tab",
+        "category": "Hermes Studio",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "hermesStudio.moveChatToSidebar",
+        "title": "Move Chat to Side Bar",
+        "category": "Hermes Studio",
+        "icon": "$(layout-sidebar-right)"
+      },
+      {
+        "command": "hermesStudio.newChat",
+        "title": "New Chat",
+        "category": "Hermes Studio",
+        "icon": "$(add)"
+      },
+      {
+        "command": "hermesStudio.showSessions",
+        "title": "Show Sessions",
+        "category": "Hermes Studio",
+        "icon": "$(history)"
+      },
+      {
+        "command": "hermesStudio.restart",
+        "title": "Restart Hermes",
+        "category": "Hermes Studio",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "hermesStudio.showLog",
+        "title": "Show Log",
+        "category": "Hermes Studio"
+      },
+      {
+        "command": "hermesStudio.refreshPanels",
+        "title": "Refresh Panels",
+        "category": "Hermes Studio",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "hermesStudio.showSkillChanges",
+        "title": "Show All Skill Changes",
+        "category": "Hermes Studio",
+        "icon": "$(list-unordered)"
+      },
+      {
+        "command": "hermesStudio.reviewMemory",
+        "title": "Review Memory Proposals in Terminal",
+        "category": "Hermes Studio",
+        "icon": "$(terminal)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "hermesStudio.showSessions",
+          "when": "activeWebviewPanelId == 'hermesStudio.chatEditor'",
+          "group": "navigation@0"
+        },
+        {
+          "command": "hermesStudio.newChat",
+          "when": "activeWebviewPanelId == 'hermesStudio.chatEditor'",
+          "group": "navigation@1"
+        },
+        {
+          "command": "hermesStudio.moveChatToSidebar",
+          "when": "activeWebviewPanelId == 'hermesStudio.chatEditor'",
+          "group": "navigation@2"
+        },
+        {
+          "command": "hermesStudio.restart",
+          "when": "activeWebviewPanelId == 'hermesStudio.chatEditor'",
+          "group": "hermes@0"
+        },
+        {
+          "command": "hermesStudio.openChat",
+          "when": "activeWebviewPanelId != 'hermesStudio.chatEditor'",
+          "group": "navigation@100"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "hermesStudio.showSessions",
+          "when": "view == hermesStudio.chat",
+          "group": "navigation@0"
+        },
+        {
+          "command": "hermesStudio.newChat",
+          "when": "view == hermesStudio.chat",
+          "group": "navigation@1"
+        },
+        {
+          "command": "hermesStudio.openChatInEditor",
+          "when": "view == hermesStudio.chat && !hermesStudio.chatInEditor",
+          "group": "navigation@2"
+        },
+        {
+          "command": "hermesStudio.restart",
+          "when": "view == hermesStudio.chat",
+          "group": "navigation@3"
+        },
+        {
+          "command": "hermesStudio.showSkillChanges",
+          "when": "view == hermesStudio.learning",
+          "group": "navigation@0"
+        },
+        {
+          "command": "hermesStudio.refreshPanels",
+          "when": "view =~ /^hermesStudio\\.(learning|curator|memory|capabilities|agents)$/",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "hermesStudio.reviewMemory",
+          "when": "view == hermesStudio.memory && viewItem == hermesPendingMemory",
+          "group": "inline"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "hermesStudio.moveChatToSidebar",
+          "when": "hermesStudio.chatInEditor"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Hermes Studio",
+      "properties": {
+        "hermesStudio.path": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "markdownDescription": "Absolute path to the Hermes executable (`hermes.exe` on Windows). Leave empty to find it on `PATH` or in the default install folder. Machine-scoped: a workspace cannot change it."
+        },
+        "hermesStudio.trace": {
+          "type": "boolean",
+          "default": false,
+          "scope": "machine",
+          "markdownDescription": "Log every ACP message to the **Hermes Studio** output channel. Includes your prompts and Hermes's replies — leave off unless you are debugging."
+        },
+        "hermesStudio.notifications": {
+          "type": "boolean",
+          "default": true,
+          "scope": "machine",
+          "markdownDescription": "Tell you when Hermes needs your approval, finishes, or stops — only while you are not looking at that chat. A notification never answers an approval: **Show** takes you to the card."
+        },
+        "hermesStudio.windowsNotifications": {
+          "type": "boolean",
+          "default": true,
+          "scope": "machine",
+          "markdownDescription": "On Windows, also show a Windows notification while VS Code is not the front window. A click brings VS Code back to the chat. Needs `#hermesStudio.notifications#`."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs --production",
+    "build:dev": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc -p tsconfig.json && svelte-check --tsconfig ./tsconfig.webview.json --fail-on-warnings",
+    "lint": "biome lint .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "1.8.0",
+    "dompurify": "^3.4.16",
+    "highlight.js": "^11.12.0",
+    "marked": "^18.0.14",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^22.20.4",
+    "@types/vscode": "~1.106.1",
+    "@types/vscode-webview": "^1.57.5",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "svelte": "^5.57.1",
+    "svelte-check": "^4.7.6",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}

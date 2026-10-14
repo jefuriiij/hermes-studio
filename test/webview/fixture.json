@@ -1,0 +1,377 @@
+{
+  "$comment": "HostToWebview messages replayed by stub.js after the webview posts `ready`. A step is {delay?, msg} (sent as-is) or {delay?, stream: {id, chunk, every, text}}, which becomes one `ops` message per chunk, each holding a single `append` to item `id` (worse than the real host, which batches ~30 ms: a good stress test). `text` may be an array of lines. Delays are ms, scaled by ?speed.",
+  "steps": [
+    {
+      "msg": {
+        "type": "init",
+        "model": {
+          "meta": {
+            "connection": { "state": "starting", "detail": "Creating session…" },
+            "busy": false,
+            "turn": 3,
+            "folder": "my-app",
+            "agentVersion": "0.21.5+2453"
+          },
+          "items": [
+            {
+              "kind": "user",
+              "id": "u1",
+              "turn": 1,
+              "text": "why does the login page send me to / instead of the page I came from?"
+            },
+            {
+              "kind": "thought",
+              "id": "thought:m1",
+              "messageId": "m1",
+              "turn": 1,
+              "text": "The user is asking about the redirect after login. I should read the auth middleware and the login handler to see where returnTo is set and whether it is ever read back."
+            },
+            {
+              "kind": "tool",
+              "id": "tool:call_1",
+              "turn": 1,
+              "title": "read: src/auth/middleware.ts",
+              "toolKind": "read",
+              "status": "completed"
+            },
+            {
+              "kind": "tool",
+              "id": "tool:call_2",
+              "turn": 1,
+              "title": "search: returnTo",
+              "toolKind": "search",
+              "status": "completed"
+            },
+            {
+              "kind": "assistant",
+              "id": "msg:m1",
+              "messageId": "m1",
+              "turn": 1,
+              "text": "The middleware sets `returnTo`, but the login handler never reads it, so every successful login falls back to `/`:\n\n```ts\nres.redirect(`/login?returnTo=${encodeURIComponent(req.originalUrl)}`);\n```\n\nWant me to fix the handler?"
+            },
+            { "kind": "user", "id": "u2", "turn": 2, "text": "yes please" },
+            {
+              "kind": "tool",
+              "id": "tool:call_3",
+              "turn": 2,
+              "title": "edit: src/auth/login.ts",
+              "toolKind": "edit",
+              "status": "failed"
+            },
+            {
+              "kind": "notice",
+              "id": "n2",
+              "turn": 2,
+              "level": "warning",
+              "text": "Stopped. Hermes will prepend the stopped request to your next message — start a New chat to drop it.",
+              "action": "newChat"
+            },
+            {
+              "kind": "user",
+              "id": "u3",
+              "turn": 3,
+              "text": "also update the docs",
+              "notSent": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "delay": 250,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "meta",
+            "patch": {
+              "connection": { "state": "ready" },
+              "sessionId": "s-current",
+              "modelId": "anthropic:claude-opus-5-5",
+              "models": [
+                {
+                  "id": "anthropic:claude-opus-5-5",
+                  "label": "claude-opus-5-5",
+                  "provider": "Anthropic"
+                },
+                {
+                  "id": "anthropic:claude-sonnet-5",
+                  "label": "claude-sonnet-5",
+                  "provider": "Anthropic"
+                },
+                {
+                  "id": "anthropic:claude-haiku-4-5",
+                  "label": "claude-haiku-4-5",
+                  "provider": "Anthropic"
+                },
+                {
+                  "id": "openai-codex:gpt-6-astra",
+                  "label": "gpt-6-astra",
+                  "provider": "ChatGPT or Codex Subscription"
+                },
+                {
+                  "id": "openai-codex:gpt-6-mini",
+                  "label": "gpt-6-mini",
+                  "provider": "ChatGPT or Codex Subscription"
+                },
+                { "id": "custom:ollama:qwen3:32b", "label": "qwen3:32b", "provider": "Ollama" }
+              ],
+              "mode": "default",
+              "modes": [
+                { "id": "default", "name": "Default", "description": "Ask before edits." },
+                {
+                  "id": "accept_edits",
+                  "name": "Accept Edits",
+                  "description": "Auto-allow workspace and temp-dir edits; still asks for sensitive paths."
+                },
+                {
+                  "id": "dont_ask",
+                  "name": "Don't Ask",
+                  "description": "Auto-allow file edits for this session except sensitive paths."
+                }
+              ],
+              "model": "claude-opus-5-5",
+              "usage": { "used": 11342, "size": 1000000 }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "delay": 200,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "add",
+            "item": {
+              "kind": "user",
+              "id": "u4",
+              "turn": 4,
+              "text": "Go ahead: fix the redirect, and show me the XSS strings you would test with.\nUser text is plain too: <b>not bold</b>"
+            }
+          },
+          { "op": "meta", "patch": { "busy": true, "turn": 4 } }
+        ]
+      }
+    },
+    {
+      "delay": 150,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "add",
+            "item": {
+              "kind": "thought",
+              "id": "thought:m4",
+              "messageId": "m4",
+              "turn": 4,
+              "text": ""
+            }
+          }
+        ]
+      }
+    },
+    {
+      "stream": {
+        "id": "thought:m4",
+        "chunk": 16,
+        "every": 12,
+        "text": "I need to read login.ts first. The fix is small: validate returnTo so it cannot become an open redirect (reject `//host` and absolute URLs), then redirect.\nAfter the edit, run the matching test."
+      }
+    },
+    {
+      "delay": 80,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "add",
+            "item": {
+              "kind": "tool",
+              "id": "tool:call_7",
+              "turn": 4,
+              "title": "read: src/auth/login.ts",
+              "toolKind": "read",
+              "status": "running"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "delay": 300,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "replace",
+            "item": {
+              "kind": "tool",
+              "id": "tool:call_7",
+              "turn": 4,
+              "title": "read: src/auth/login.ts",
+              "toolKind": "read",
+              "status": "completed"
+            }
+          },
+          {
+            "op": "add",
+            "item": {
+              "kind": "tool",
+              "id": "tool:call_8",
+              "turn": 4,
+              "title": "edit: src/auth/login.ts",
+              "toolKind": "edit",
+              "status": "running"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "delay": 300,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "replace",
+            "item": {
+              "kind": "tool",
+              "id": "tool:call_8",
+              "turn": 4,
+              "title": "edit: src/auth/login.ts",
+              "toolKind": "edit",
+              "status": "completed"
+            }
+          },
+          {
+            "op": "add",
+            "item": {
+              "kind": "tool",
+              "id": "tool:call_9",
+              "turn": 4,
+              "title": "terminal: npm test -- --grep \"redirect after login\" --reporter=dot --bail --no-color --timeout=20000",
+              "toolKind": "execute",
+              "status": "running"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "delay": 400,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "replace",
+            "item": {
+              "kind": "tool",
+              "id": "tool:call_9",
+              "turn": 4,
+              "title": "terminal: npm test -- --grep \"redirect after login\" --reporter=dot --bail --no-color --timeout=20000",
+              "toolKind": "execute",
+              "status": "failed"
+            }
+          },
+          {
+            "op": "add",
+            "item": {
+              "kind": "assistant",
+              "id": "msg:m4",
+              "messageId": "m4",
+              "turn": 4,
+              "text": ""
+            }
+          }
+        ]
+      }
+    },
+    {
+      "stream": {
+        "id": "msg:m4",
+        "chunk": 12,
+        "every": 8,
+        "text": [
+          "## Fixed: login keeps `returnTo`",
+          "",
+          "The handler now reads **`returnTo`**, checks it is a *same-site* path, and only then redirects:",
+          "",
+          "```ts",
+          "// src/auth/login.ts",
+          "export function safeReturnTo(raw: unknown): string {",
+          "  if (typeof raw !== \"string\" || !raw.startsWith(\"/\") || raw.startsWith(\"//\")) return \"/\";",
+          "  return raw; // 42 is not special",
+          "}",
+          "```",
+          "",
+          "```diff",
+          "- res.redirect(\"/\");",
+          "+ res.redirect(safeReturnTo(req.query.returnTo));",
+          "```",
+          "",
+          "Run it yourself with:",
+          "",
+          "```powershell",
+          "npm test -- --grep \"redirect after login\"",
+          "```",
+          "",
+          "| Case | Input | Result |",
+          "| --- | --- | --- |",
+          "| same-site | `/settings` | redirected |",
+          "| protocol-relative | `//evil.example` | falls back to `/` |",
+          "",
+          "- [x] handler reads `returnTo`",
+          "- [ ] docs updated",
+          "",
+          "> The test run failed on an unrelated snapshot; see the notice below.",
+          "",
+          "### XSS strings (all must render as text)",
+          "",
+          "Inline raw HTML stays text: <script>alert(1)</script> and <img src=x onerror=alert(2)>",
+          "",
+          "<script>alert(1)</script>",
+          "",
+          "<img src=x onerror=alert(2)>",
+          "",
+          "A [link](https://example.com), an ![img](https://evil.example/x.png) and [a js link](javascript:alert(5))."
+        ]
+      }
+    },
+    {
+      "delay": 120,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "add",
+            "item": {
+              "kind": "notice",
+              "id": "n4",
+              "turn": 4,
+              "level": "error",
+              "text": "The test command failed: npm exited with code 1. Details are in the Hermes Studio log."
+            }
+          },
+          { "op": "meta", "patch": { "busy": false, "usage": { "used": 24100, "size": 1000000 } } }
+        ]
+      }
+    },
+    {
+      "delay": 300,
+      "msg": {
+        "type": "ops",
+        "ops": [
+          {
+            "op": "meta",
+            "patch": {
+              "title": "Fix the login redirect after the OAuth callback drops the returnTo parameter"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

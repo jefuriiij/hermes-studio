@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows is the primary platform (Hermes's launcher, taskkill tree
+        # kill, `Path` casing); Linux keeps the POSIX paths honest.
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          # VS Code 1.106 (the engine floor) runs Node 22; vsce 4 needs >= 22.
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run check
+      # Unit + fake-agent integration. The real-Hermes suite (test/real) skips
+      # itself unless HERMES_STUDIO_REAL=1, which CI never sets.
+      - run: npm test
+      - run: npm run build
+      # Packaging proves the .vsix builds. It is NOT uploaded as an artifact:
+      # the account-wide artifact quota is shared with other repos and was full
+      # on the first run, which failed the job after every real check passed.
+      # The .vsix is built locally (`npm run package`) for installing.
+      - run: npx vsce package --no-dependencies --out hermes-studio.vsix
